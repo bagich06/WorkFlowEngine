@@ -1,0 +1,28 @@
+package interfaces
+
+import (
+	"context"
+	"workflow_engine/internal/domain/entities"
+)
+
+// Repository Interfaces
+type UserRepository interface {
+	Create(ctx context.Context, user *entities.User) (*entities.User, error)
+	GetByID(ctx context.Context, id int64) (*entities.User, error)
+	GetByRole(ctx context.Context, role string) ([]*entities.User, error)
+	GetByPhone(ctx context.Context, phone string) (*entities.User, error)
+	GetAll(ctx context.Context) ([]*entities.User, error)
+	Delete(ctx context.Context, id int64) error
+}
+
+// UseCase Interfaces
+type AuthUseCaseInterface interface {
+	Register(ctx context.Context, user *entities.User) (*entities.User, error)
+	Login(ctx context.Context, phone, password string) (*entities.User, error)
+}
+
+// Service Interfaces
+type PasswordHasher interface {
+	Hash(password string) (string, error)
+	Compare(hashedPassword, password string) error
+}
