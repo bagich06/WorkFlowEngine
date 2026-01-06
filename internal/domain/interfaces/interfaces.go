@@ -15,6 +15,12 @@ type UserRepository interface {
 	Delete(ctx context.Context, id int64) error
 }
 
+type DocumentRepository interface {
+	Create(ctx context.Context, document *entities.Document) (*entities.Document, error)
+	GetByID(ctx context.Context, id int64) (*entities.Document, error)
+	UpdateStatus(ctx context.Context, newStatus entities.DocumentStatus, id int64) error
+}
+
 // UseCase Interfaces
 type AuthUseCaseInterface interface {
 	Register(ctx context.Context, user *entities.User) (*entities.User, error)
