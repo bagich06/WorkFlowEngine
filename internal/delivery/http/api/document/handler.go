@@ -24,7 +24,17 @@ func (h *DocumentHandler) CreateDocument(w http.ResponseWriter, r *http.Request)
 	var req DocumentCreateRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if req.Topic == "" {
+		http.Error(w, "Topic is required", http.StatusBadRequest)
+		return
+	}
+
+	if req.Status != entities.DocumentStatusStarted {
+		http.Error(w, "Invalid initial status", http.StatusBadRequest)
 		return
 	}
 
@@ -76,7 +86,7 @@ func (h *DocumentHandler) UpdateDocumentStatus(w http.ResponseWriter, r *http.Re
 		http.Error(w, "Role not found in context", http.StatusUnauthorized)
 		return
 	}
-
+	
 	docIDStr := r.PathValue("id")
 	docID, err := strconv.ParseInt(docIDStr, 10, 64)
 	if err != nil {
