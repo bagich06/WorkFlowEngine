@@ -32,7 +32,7 @@ func (repo *UserRepository) Create(ctx context.Context, user *entities.User) (*e
 	return user, nil
 }
 
-func (r *UserRepository) GetByPhone(ctx context.Context, phone string) (*entities.User, error) {
+func (repo *UserRepository) GetByPhone(ctx context.Context, phone string) (*entities.User, error) {
 	query := `
 		SELECT id, first_name, last_name, phone, password, role 
 		FROM users 
@@ -40,7 +40,7 @@ func (r *UserRepository) GetByPhone(ctx context.Context, phone string) (*entitie
 	`
 
 	user := &entities.User{}
-	err := r.db.Pool.QueryRow(ctx, query, phone).Scan(
+	err := repo.db.Pool.QueryRow(ctx, query, phone).Scan(
 		&user.ID, &user.FirstName, &user.LastName, &user.Phone, &user.Password, &user.Role,
 	)
 	if err != nil {
@@ -50,7 +50,7 @@ func (r *UserRepository) GetByPhone(ctx context.Context, phone string) (*entitie
 	return user, nil
 }
 
-func (r *UserRepository) GetByID(ctx context.Context, id int64) (*entities.User, error) {
+func (repo *UserRepository) GetByID(ctx context.Context, id int64) (*entities.User, error) {
 	query := `
 		SELECT id, first_name, last_name, phone, password, role 
 		FROM users 
@@ -58,7 +58,7 @@ func (r *UserRepository) GetByID(ctx context.Context, id int64) (*entities.User,
 	`
 
 	user := &entities.User{}
-	err := r.db.Pool.QueryRow(ctx, query, id).Scan(
+	err := repo.db.Pool.QueryRow(ctx, query, id).Scan(
 		&user.ID, &user.FirstName, &user.LastName, &user.Phone, &user.Password, &user.Role,
 	)
 	if err != nil {
@@ -71,14 +71,14 @@ func (r *UserRepository) GetByID(ctx context.Context, id int64) (*entities.User,
 	return user, nil
 }
 
-func (r *UserRepository) GetByRole(ctx context.Context, role string) ([]*entities.User, error) {
+func (repo *UserRepository) GetByRole(ctx context.Context, role string) ([]*entities.User, error) {
 	query := `
 		SELECT id, first_name, last_name, phone, password, role 
 		FROM users 
 		WHERE role = $1
 	`
 
-	rows, err := r.db.Pool.Query(ctx, query, role)
+	rows, err := repo.db.Pool.Query(ctx, query, role)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get users by role: %w", err)
 	}
@@ -103,13 +103,13 @@ func (r *UserRepository) GetByRole(ctx context.Context, role string) ([]*entitie
 	return users, nil
 }
 
-func (r *UserRepository) GetAll(ctx context.Context) ([]*entities.User, error) {
+func (repo *UserRepository) GetAll(ctx context.Context) ([]*entities.User, error) {
 	query := `
 		SELECT id, first_name, last_name, phone, password, role 
 		FROM users
 	`
 
-	rows, err := r.db.Pool.Query(ctx, query)
+	rows, err := repo.db.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all users: %w", err)
 	}
@@ -134,10 +134,10 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*entities.User, error) {
 	return users, nil
 }
 
-func (r *UserRepository) Delete(ctx context.Context, id int64) error {
+func (repo *UserRepository) Delete(ctx context.Context, id int64) error {
 	query := `DELETE FROM users WHERE id = $1`
 
-	commandTag, err := r.db.Pool.Exec(ctx, query, id)
+	commandTag, err := repo.db.Pool.Exec(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
 	}
