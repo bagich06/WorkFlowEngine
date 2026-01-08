@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v4"
 	"workflow_engine/internal/domain/entities"
+
+	"github.com/jackc/pgx/v4"
 )
 
 type UserRepository struct {
@@ -23,7 +24,7 @@ func (repo *UserRepository) Create(ctx context.Context, user *entities.User) (*e
 		RETURNING id
 	`
 
-	err := repo.db.Pool.QueryRow(ctx, query, user.FirstName, user.LastName, user.Phone, user.Role).Scan(&user.ID)
+	err := repo.db.Pool.QueryRow(ctx, query, user.FirstName, user.LastName, user.Phone, user.Password, user.Role).Scan(&user.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -43,9 +44,6 @@ func (r *UserRepository) GetByPhone(ctx context.Context, phone string) (*entitie
 		&user.ID, &user.FirstName, &user.LastName, &user.Phone, &user.Password, &user.Role,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errors.New("user not found")
-		}
 		return nil, fmt.Errorf("failed to get user by phone: %w", err)
 	}
 

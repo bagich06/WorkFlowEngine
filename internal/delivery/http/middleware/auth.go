@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"workflow_engine/internal/domain/entities"
 	"workflow_engine/pkg/jwt"
 )
 
@@ -45,15 +46,23 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 	})
 }
 
-func (m *AuthMiddleware) RequireRole(role string) func(http.Handler) http.Handler {
+func (m *AuthMiddleware) RequireRole(role entities.UserRole) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			userRole, ok := r.Context().Value(RoleKey).(string)
-			if !ok || userRole != role {
+			if !ok || userRole != string(role) {
 				http.Error(w, "Forbidden", http.StatusForbidden)
 				return
 			}
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func GetRoleFromContext(ctx context.Context) (entities.UserRole, bool) {
+	roleStr, ok := ctx.Value(RoleKey).(string)
+	if !ok {
+		return "", false
+	}
+	return entities.UserRole(roleStr), true
 }

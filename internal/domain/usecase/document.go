@@ -14,11 +14,7 @@ func NewDocumentUseCase(docRepo interfaces.DocumentRepository) *DocumentUseCase 
 	return &DocumentUseCase{docRepo: docRepo}
 }
 
-func (uc *DocumentUseCase) Create(ctx context.Context, document *entities.Document, user *entities.User) (*entities.Document, error) {
-	if user.Role != entities.RoleWorker {
-		return nil, entities.ErrNotWorker
-	}
-
+func (uc *DocumentUseCase) Create(ctx context.Context, document *entities.Document) (*entities.Document, error) {
 	document.Status = entities.DocumentStatusStarted
 	created, err := uc.docRepo.Create(ctx, document)
 	if err != nil {
@@ -28,20 +24,33 @@ func (uc *DocumentUseCase) Create(ctx context.Context, document *entities.Docume
 	return created, nil
 }
 
-func (uc *DocumentUseCase) UpdateStatus(ctx context.Context, newStatus entities.DocumentStatus, user entities.User) error {
-	if (newStatus == entities.DocumentStatusManagerConfirmed || newStatus == entities.DocumentStatusManagerFailed) && user.Role != entities.RoleManager {
+func (uc *DocumentUseCase) GetByID(ctx context.Context, id int64) (*entities.Document, error) {
+	doc, err := uc.docRepo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return doc, nil
+}
+
+func (uc *DocumentUseCase) UpdateStatus(ctx context.Context, newStatus entities.DocumentStatus, docID int64, userRole entities.UserRole) error {
+	if (newStatus == entities.DocumentStatusManagerConfirmed || newStatus == entities.DocumentStatusManagerFailed) && userRole != entities.RoleManager {
 		return entities.ErrNotManager
 	}
 
-	if (newStatus == entities.DocumentStatusEconomistConfirmed || newStatus == entities.DocumentStatusEconomistFailed) && (user.Role != entities.RoleEconomist) {
+	if (newStatus == entities.DocumentStatusEconomistConfirmed || newStatus == entities.DocumentStatusEconomistFailed) && (userRole != entities.RoleEconomist) {
 		return entities.ErrNotEconomist
 	}
 
-	if (newStatus == entities.DocumentStatusBossConfirmed || newStatus == entities.DocumentStatusBossFailed) && (user.Role != entities.RoleBoss) {
+	if (newStatus == entities.DocumentStatusBossConfirmed || newStatus == entities.DocumentStatusBossFailed) && (userRole != entities.RoleBoss) {
 		return entities.ErrNotBoss
 	}
 
-	err := uc.docRepo.UpdateStatus(ctx, newStatus, user.ID)
+	if newStatus == entities.DocumentStatusManagerFailed || newStatus == entities.DocumentStatusEconomistFailed || newStatus == entities.DocumentStatusBossFailed {
+		return entities.ErrFailedStatus
+	}
+
+	err := uc.docRepo.UpdateStatus(ctx, newStatus, docID)
 	if err != nil {
 		return err
 	}

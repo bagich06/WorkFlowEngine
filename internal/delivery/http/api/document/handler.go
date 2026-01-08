@@ -5,14 +5,13 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"workflow_engine/internal/delivery/http/middleware"
 	"workflow_engine/internal/domain/entities"
 	"workflow_engine/internal/domain/interfaces"
-	"workflow_engine/pkg/jwt"
 )
 
 type DocumentHandler struct {
 	documentUseCase interfaces.DocumentUseCase
-	jwtService      jwt.JWTServiceInterface
 }
 
 func NewDocumentHandler(documentUseCase interfaces.DocumentUseCase) *DocumentHandler {
@@ -23,7 +22,7 @@ func NewDocumentHandler(documentUseCase interfaces.DocumentUseCase) *DocumentHan
 
 func (h *DocumentHandler) CreateDocument(w http.ResponseWriter, r *http.Request) {
 	var req DocumentCreateRequest
-	err := json.NewEncoder(w).Encode(req)
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -72,6 +71,12 @@ func (h *DocumentHandler) GetDocumentByID(w http.ResponseWriter, r *http.Request
 }
 
 func (h *DocumentHandler) UpdateDocumentStatus(w http.ResponseWriter, r *http.Request) {
+	userRole, ok := middleware.GetRoleFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Role not found in context", http.StatusUnauthorized)
+		return
+	}
+
 	docIDStr := r.PathValue("id")
 	docID, err := strconv.ParseInt(docIDStr, 10, 64)
 	if err != nil {
@@ -86,7 +91,7 @@ func (h *DocumentHandler) UpdateDocumentStatus(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = h.documentUseCase.UpdateStatus(r.Context(), req.Status, docID)
+	err = h.documentUseCase.UpdateStatus(r.Context(), req.Status, docID, userRole)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

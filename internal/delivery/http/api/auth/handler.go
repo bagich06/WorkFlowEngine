@@ -24,14 +24,13 @@ func NewAuthHandler(authUseCase interfaces.AuthUseCaseInterface, jwtService jwt.
 	}
 }
 
-func (h *AuthHandler) RegisterStudent(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.respondWithError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
-	// Validate request
 	if err := h.validator.Validate(&req); err != nil {
 		h.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -46,8 +45,8 @@ func (h *AuthHandler) RegisterStudent(w http.ResponseWriter, r *http.Request) {
 
 	createdUser, err := h.authUseCase.Register(r.Context(), user)
 	if err != nil {
-		if errors.Is(err, errors.New("user already exists")) {
-			h.respondWithError(w, http.StatusConflict, "User with this phone already exists")
+		if errors.Is(err, entities.ErrUserAlreadyExists) {
+			h.respondWithError(w, http.StatusConflict, "User with this credentials already exists")
 			return
 		}
 		h.respondWithError(w, http.StatusInternalServerError, "Failed to register student")
@@ -80,7 +79,6 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate request
 	if err := h.validator.Validate(&req); err != nil {
 		h.respondWithError(w, http.StatusBadRequest, err.Error())
 		return

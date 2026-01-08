@@ -9,6 +9,10 @@ type DocumentRepository struct {
 	db *DB
 }
 
+func NewDocumentRepository(db *DB) *DocumentRepository {
+	return &DocumentRepository{db: db}
+}
+
 func (repo *DocumentRepository) Create(ctx context.Context, document *entities.Document) (*entities.Document, error) {
 	query := `INSERT INTO documents (topic, status) VALUES ($1, $2) RETURNING id`
 

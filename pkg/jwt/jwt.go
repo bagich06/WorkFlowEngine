@@ -3,6 +3,7 @@ package jwt
 import (
 	"errors"
 	"time"
+	"workflow_engine/internal/domain/entities"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -20,7 +21,7 @@ type Claims struct {
 
 // JWTServiceInterface defines the contract for JWT operations
 type JWTServiceInterface interface {
-	GenerateToken(userID int64, role string) (string, error)
+	GenerateToken(userID int64, role entities.UserRole) (string, error)
 	ValidateToken(tokenString string) (*Claims, error)
 }
 
@@ -36,10 +37,10 @@ func NewJWTService(secretKey string, tokenDuration time.Duration) *JWTService {
 	}
 }
 
-func (s *JWTService) GenerateToken(userID int64, role string) (string, error) {
+func (s *JWTService) GenerateToken(userID int64, role entities.UserRole) (string, error) {
 	claims := &Claims{
 		UserID: userID,
-		Role:   role,
+		Role:   string(role),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.tokenDuration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
