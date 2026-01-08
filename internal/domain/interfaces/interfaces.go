@@ -27,6 +27,12 @@ type AuthUseCaseInterface interface {
 	Login(ctx context.Context, phone, password string) (*entities.User, error)
 }
 
+type DocumentUseCase interface {
+	Create(ctx context.Context, document *entities.Document) (*entities.Document, error)
+	GetByID(ctx context.Context, id int64) (*entities.Document, error)
+	UpdateStatus(ctx context.Context, newStatus entities.DocumentStatus, id int64) error
+}
+
 // Service Interfaces
 type PasswordHasher interface {
 	Hash(password string) (string, error)
