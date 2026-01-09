@@ -12,4 +12,5 @@ var (
 	ErrNotEconomist = errors.New("only economists is allowed to do this")
 	ErrNotBoss      = errors.New("only boss is allowed to do this")
 	ErrFailedStatus = errors.New("process failed")
+	ErrNotReady     = errors.New("process not ready")
 )

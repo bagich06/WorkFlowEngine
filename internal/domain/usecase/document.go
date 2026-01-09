@@ -34,6 +34,15 @@ func (uc *DocumentUseCase) GetByID(ctx context.Context, id int64) (*entities.Doc
 }
 
 func (uc *DocumentUseCase) UpdateStatus(ctx context.Context, newStatus entities.DocumentStatus, docID int64, userRole entities.UserRole) error {
+	oldStatus, err := uc.docRepo.GetStatusByID(ctx, docID)
+	if err != nil {
+		return err
+	}
+
+	if oldStatus == entities.DocumentStatusManagerFailed || oldStatus == entities.DocumentStatusEconomistFailed || oldStatus == entities.DocumentStatusBossFailed {
+		return entities.ErrFailedStatus
+	}
+
 	if (newStatus == entities.DocumentStatusManagerConfirmed || newStatus == entities.DocumentStatusManagerFailed) && userRole != entities.RoleManager {
 		return entities.ErrNotManager
 	}
@@ -50,7 +59,19 @@ func (uc *DocumentUseCase) UpdateStatus(ctx context.Context, newStatus entities.
 		return entities.ErrFailedStatus
 	}
 
-	err := uc.docRepo.UpdateStatus(ctx, newStatus, docID)
+	if userRole == entities.RoleManager && oldStatus != entities.DocumentStatusStarted {
+		return entities.ErrNotReady
+	}
+
+	if userRole == entities.RoleEconomist && oldStatus != entities.DocumentStatusManagerConfirmed {
+		return entities.ErrNotReady
+	}
+
+	if userRole == entities.RoleBoss && oldStatus != entities.DocumentStatusEconomistConfirmed {
+		return entities.ErrNotReady
+	}
+
+	err = uc.docRepo.UpdateStatus(ctx, newStatus, docID)
 	if err != nil {
 		return err
 	}

@@ -46,3 +46,16 @@ func (repo *DocumentRepository) UpdateStatus(ctx context.Context, newStatus enti
 
 	return nil
 }
+
+func (repo *DocumentRepository) GetStatusByID(ctx context.Context, id int64) (entities.DocumentStatus, error) {
+	query := `SELECT status FROM documents WHERE id = $1`
+
+	var status entities.DocumentStatus
+
+	err := repo.db.Pool.QueryRow(ctx, query, id).Scan(&status)
+	if err != nil {
+		return "", err
+	}
+
+	return status, nil
+}
