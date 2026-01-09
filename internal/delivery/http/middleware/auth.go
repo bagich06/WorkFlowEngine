@@ -19,6 +19,10 @@ type AuthMiddleware struct {
 	jwtService jwt.JWTServiceInterface
 }
 
+func NewAuthMiddleware(jwtService jwt.JWTServiceInterface) *AuthMiddleware {
+	return &AuthMiddleware{jwtService: jwtService}
+}
+
 func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")

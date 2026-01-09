@@ -3,10 +3,10 @@ package document
 import "workflow_engine/internal/domain/entities"
 
 type DocumentCreateRequest struct {
-	Topic  string                  `json:"topic"`
-	Status entities.DocumentStatus `json:"status"`
+	Topic  string                  `json:"topic" validate:"required"`
+	Status entities.DocumentStatus `json:"status" validate:"required"`
 }
 
 type DocumentUpdateRequest struct {
-	Status entities.DocumentStatus `json:"status"`
+	Status entities.DocumentStatus `json:"status" validate:"required"`
 }

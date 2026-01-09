@@ -15,7 +15,6 @@ func NewDocumentUseCase(docRepo interfaces.DocumentRepository) *DocumentUseCase 
 }
 
 func (uc *DocumentUseCase) Create(ctx context.Context, document *entities.Document) (*entities.Document, error) {
-	document.Status = entities.DocumentStatusStarted
 	created, err := uc.docRepo.Create(ctx, document)
 	if err != nil {
 		return nil, err

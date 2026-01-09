@@ -44,6 +44,9 @@ func (repo *UserRepository) GetByPhone(ctx context.Context, phone string) (*enti
 		&user.ID, &user.FirstName, &user.LastName, &user.Phone, &user.Password, &user.Role,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil // Пользователь не найден — это не ошибка
+		}
 		return nil, fmt.Errorf("failed to get user by phone: %w", err)
 	}
 

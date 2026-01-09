@@ -1,13 +1,13 @@
 package auth
 
 type RegisterRequest struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Phone     string `json:"phone"`
-	Password  string `json:"password"`
+	FirstName string `json:"first_name" validate:"required"`
+	LastName  string `json:"last_name" validate:"required"`
+	Phone     string `json:"phone" validate:"required"`
+	Password  string `json:"password" validate:"required,min=6"`
 }
 
 type LoginRequest struct {
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
+	Phone    string `json:"phone" validate:"required"`
+	Password string `json:"password" validate:"required,min=6"`
 }

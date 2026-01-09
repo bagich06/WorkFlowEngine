@@ -86,7 +86,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.authUseCase.Login(r.Context(), req.Phone, req.Password)
 	if err != nil {
-		if errors.Is(err, errors.New("User with this credentials does not exist")) {
+		if errors.Is(err, entities.ErrUserAlreadyExists) {
 			h.respondWithError(w, http.StatusUnauthorized, "Invalid phone or password")
 			return
 		}

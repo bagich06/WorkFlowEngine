@@ -8,10 +8,12 @@ import (
 	"workflow_engine/internal/delivery/http/middleware"
 	"workflow_engine/internal/domain/entities"
 	"workflow_engine/internal/domain/interfaces"
+	"workflow_engine/pkg/validator"
 )
 
 type DocumentHandler struct {
 	documentUseCase interfaces.DocumentUseCase
+	validator       *validator.Validator
 }
 
 func NewDocumentHandler(documentUseCase interfaces.DocumentUseCase) *DocumentHandler {
@@ -28,8 +30,8 @@ func (h *DocumentHandler) CreateDocument(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if req.Topic == "" {
-		http.Error(w, "Topic is required", http.StatusBadRequest)
+	if err := h.validator.Validate(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -86,7 +88,7 @@ func (h *DocumentHandler) UpdateDocumentStatus(w http.ResponseWriter, r *http.Re
 		http.Error(w, "Role not found in context", http.StatusUnauthorized)
 		return
 	}
-	
+
 	docIDStr := r.PathValue("id")
 	docID, err := strconv.ParseInt(docIDStr, 10, 64)
 	if err != nil {
@@ -95,6 +97,10 @@ func (h *DocumentHandler) UpdateDocumentStatus(w http.ResponseWriter, r *http.Re
 	}
 
 	var req DocumentUpdateRequest
+	err = h.validator.Validate(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
 	err = json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
