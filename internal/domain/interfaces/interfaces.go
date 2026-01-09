@@ -31,7 +31,12 @@ type AuthUseCaseInterface interface {
 type DocumentUseCase interface {
 	Create(ctx context.Context, document *entities.Document) (*entities.Document, error)
 	GetByID(ctx context.Context, id int64) (*entities.Document, error)
-	UpdateStatus(ctx context.Context, newStatus entities.DocumentStatus, docID int64, userRole entities.UserRole) error
+}
+
+type WorkflowUseCase interface {
+	Approve(ctx context.Context, docID int64, userID int64) error
+	Reject(ctx context.Context, docID int64, userID int64) error
+	GetDocumentStatus(ctx context.Context, docID int64) (entities.DocumentStatus, error)
 }
 
 // Service Interfaces

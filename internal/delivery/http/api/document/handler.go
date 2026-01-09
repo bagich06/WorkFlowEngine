@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
-	"workflow_engine/internal/delivery/http/middleware"
 	"workflow_engine/internal/domain/entities"
 	"workflow_engine/internal/domain/interfaces"
 	"workflow_engine/pkg/validator"
@@ -74,50 +73,11 @@ func (h *DocumentHandler) GetDocumentByID(w http.ResponseWriter, r *http.Request
 	}
 
 	docResp := DocumentResponse{
+		ID:     document.ID,
 		Topic:  document.Topic,
 		Status: document.Status,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(docResp)
-}
-
-func (h *DocumentHandler) UpdateDocumentStatus(w http.ResponseWriter, r *http.Request) {
-	userRole, ok := middleware.GetRoleFromContext(r.Context())
-	if !ok {
-		http.Error(w, "Role not found in context", http.StatusUnauthorized)
-		return
-	}
-
-	docIDStr := r.PathValue("id")
-	docID, err := strconv.ParseInt(docIDStr, 10, 64)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	var req DocumentUpdateRequest
-	err = h.validator.Validate(&req)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-	err = json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = h.documentUseCase.UpdateStatus(r.Context(), req.Status, docID, userRole)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	resp := UpdateDocumentResponse{
-		RespStr: "Status updated successfully",
-		Status:  req.Status,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
 }

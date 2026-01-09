@@ -14,5 +14,4 @@ func RegisterRoutes(mux *http.ServeMux, handler *DocumentHandler, authMiddleware
 	}
 	mux.Handle("POST /api/document", workerOnly(handler.CreateDocument))
 	mux.Handle("GET /api/document/{id}", authMiddleware.Authenticate(http.HandlerFunc(handler.GetDocumentByID)))
-	mux.Handle("PUT /api/document/status/{id}", authMiddleware.Authenticate(http.HandlerFunc(handler.UpdateDocumentStatus)))
 }

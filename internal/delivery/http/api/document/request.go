@@ -6,7 +6,3 @@ type DocumentCreateRequest struct {
 	Topic  string                  `json:"topic" validate:"required"`
 	Status entities.DocumentStatus `json:"status" validate:"required"`
 }
-
-type DocumentUpdateRequest struct {
-	Status entities.DocumentStatus `json:"status" validate:"required"`
-}
