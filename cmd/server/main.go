@@ -10,7 +10,6 @@ import (
 	"workflow_engine/internal/delivery/http/api/workflow"
 	"workflow_engine/internal/delivery/http/middleware"
 	"workflow_engine/internal/domain/usecase"
-	workflowusecase "workflow_engine/internal/domain/usecase/workflow"
 	"workflow_engine/internal/infrastructure/repository/postgres"
 	"workflow_engine/internal/infrastructure/service"
 	"workflow_engine/pkg/jwt"
@@ -30,23 +29,24 @@ func main() {
 
 	userRepo := postgres.NewUserRepository(db)
 	docRepo := postgres.NewDocumentRepository(db)
+	workflowRepo := postgres.NewWorkFlowRepository(db)
 
 	docUseCase := usecase.NewDocumentUseCase(docRepo)
-	wfUseCase := workflowusecase.NewWorkflowUseCase(docRepo, userRepo)
 	authUseCase := usecase.NewAuthUseCase(userRepo, passHasher)
+	workflowUseCase := usecase.NewWorkFlowRepository(workflowRepo, docRepo)
 
 	jwtService := jwt.NewJWTService(cfg.JWTSecret)
 	authMiddleware := middleware.NewAuthMiddleware(jwtService)
 
 	docHandler := document.NewDocumentHandler(docUseCase)
-	wfHandler := workflow.NewWorkflowHandler(wfUseCase)
 	authHandler := auth.NewAuthHandler(authUseCase, jwtService)
+	workflowHandler := workflow.NewWorkFlowHandler(workflowUseCase)
 
 	mux := http.NewServeMux()
 
 	auth.RegisterRoutes(mux, authHandler)
 	document.RegisterRoutes(mux, docHandler, authMiddleware)
-	workflow.RegisterRoutes(mux, wfHandler, authMiddleware)
+	workflow.RegisterRoutes(mux, workflowHandler, authMiddleware)
 
 	log.Printf("Server started on :%s", cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, mux); err != nil {

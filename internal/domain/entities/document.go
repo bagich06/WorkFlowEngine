@@ -3,16 +3,17 @@ package entities
 type DocumentStatus string
 
 const (
-	DocumentStatusStarted            DocumentStatus = "started"
-	DocumentStatusManagerConfirmed   DocumentStatus = "manager_confirmed"
-	DocumentStatusEconomistConfirmed DocumentStatus = "economist_confirmed"
-	DocumentStatusBossConfirmed      DocumentStatus = "boss_confirmed"
-	DocumentStatusManagerFailed      DocumentStatus = "manager_failed"
-	DocumentStatusEconomistFailed    DocumentStatus = "economist_failed"
-	DocumentStatusBossFailed         DocumentStatus = "boss_failed"
-	DocumentStatusExpired            DocumentStatus = "expired"
-	DocumentStatusSuccess            DocumentStatus = "success"
+	DocumentStatusStarted  DocumentStatus = "started"
+	DocumentStatusApproved DocumentStatus = "approved"
+	DocumentStatusRejected DocumentStatus = "rejected"
 )
+
+//DocumentStatusManagerConfirmed   Status = "manager_confirmed"
+//DocumentStatusEconomistConfirmed Status = "economist_confirmed"
+//DocumentStatusBossConfirmed      Status = "boss_confirmed"
+//DocumentStatusManagerFailed      Status = "manager_failed"
+//DocumentStatusEconomistFailed    Status = "economist_failed"
+//DocumentStatusBossFailed         Status = "boss_failed"
 
 type Document struct {
 	ID     int64
