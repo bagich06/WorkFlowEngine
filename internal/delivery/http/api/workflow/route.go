@@ -5,8 +5,6 @@ import (
 	"workflow_engine/internal/delivery/http/middleware"
 )
 
-func RegisterRoutes(mux *http.ServeMux, handler *WorkflowHandler, authMiddleware *middleware.AuthMiddleware) {
-	mux.Handle("POST /workflow/{id}/approve", authMiddleware.Authenticate(http.HandlerFunc(handler.Approve)))
-	mux.Handle("POST /workflow/{id}/reject", authMiddleware.Authenticate(http.HandlerFunc(handler.Reject)))
-	mux.Handle("GET /workflow/{id}/status", authMiddleware.Authenticate(http.HandlerFunc(handler.GetStatus)))
+func RegisterRoutes(mux *http.ServeMux, handler *WorkFlowHandler, authMiddleware *middleware.AuthMiddleware) {
+	mux.Handle("GET /api/document/{id}/signal", authMiddleware.Authenticate(http.HandlerFunc(handler.Signal)))
 }

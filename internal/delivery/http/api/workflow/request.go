@@ -1,9 +1,8 @@
 package workflow
 
-type ApproveRequest struct {
-	Comment string `json:"comment,omitempty"`
-}
+import "workflow_engine/internal/domain/entities"
 
-type RejectRequest struct {
-	Reason string `json:"reason"`
+type SignalRequest struct {
+	Action string            `json:"action"`
+	Role   entities.UserRole `json:"role"`
 }
