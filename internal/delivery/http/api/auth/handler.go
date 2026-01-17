@@ -1,22 +1,27 @@
 package auth
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"workflow_engine/internal/domain/entities"
-	"workflow_engine/internal/domain/interfaces"
 	"workflow_engine/pkg/jwt"
 	"workflow_engine/pkg/validator"
 )
 
+type AuthUseCaseInterface interface {
+	Register(ctx context.Context, user *entities.User) (*entities.User, error)
+	Login(ctx context.Context, phone, password string) (*entities.User, error)
+}
+
 type AuthHandler struct {
-	authUseCase interfaces.AuthUseCaseInterface
+	authUseCase AuthUseCaseInterface
 	jwtService  jwt.JWTServiceInterface
 	validator   *validator.Validator
 }
 
-func NewAuthHandler(authUseCase interfaces.AuthUseCaseInterface, jwtService jwt.JWTServiceInterface) *AuthHandler {
+func NewAuthHandler(authUseCase AuthUseCaseInterface, jwtService jwt.JWTServiceInterface) *AuthHandler {
 	return &AuthHandler{
 		authUseCase: authUseCase,
 		jwtService:  jwtService,

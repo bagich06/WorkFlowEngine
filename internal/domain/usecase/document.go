@@ -3,14 +3,20 @@ package usecase
 import (
 	"context"
 	"workflow_engine/internal/domain/entities"
-	"workflow_engine/internal/domain/interfaces"
 )
 
-type DocumentUseCase struct {
-	docRepo interfaces.DocumentRepository
+type DocumentRepository interface {
+	Create(ctx context.Context, document *entities.Document) (*entities.Document, error)
+	GetByID(ctx context.Context, id int64) (*entities.Document, error)
+	UpdateStatus(ctx context.Context, newStatus entities.DocumentStatus, id int64) error
+	GetStatusByID(ctx context.Context, id int64) (entities.DocumentStatus, error)
 }
 
-func NewDocumentUseCase(docRepo interfaces.DocumentRepository) *DocumentUseCase {
+type DocumentUseCase struct {
+	docRepo DocumentRepository
+}
+
+func NewDocumentUseCase(docRepo DocumentRepository) *DocumentUseCase {
 	return &DocumentUseCase{docRepo: docRepo}
 }
 

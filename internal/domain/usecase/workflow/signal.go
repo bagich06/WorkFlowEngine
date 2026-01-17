@@ -3,19 +3,34 @@ package workflow
 import (
 	"context"
 	"workflow_engine/internal/domain/entities"
-	"workflow_engine/internal/domain/interfaces"
 	"workflow_engine/internal/domain/workflow"
 )
 
+type UserRepository interface {
+	Create(ctx context.Context, user *entities.User) (*entities.User, error)
+	GetByID(ctx context.Context, id int64) (*entities.User, error)
+	GetByRole(ctx context.Context, role string) ([]*entities.User, error)
+	GetByPhone(ctx context.Context, phone string) (*entities.User, error)
+	GetAll(ctx context.Context) ([]*entities.User, error)
+	Delete(ctx context.Context, id int64) error
+}
+
+type DocumentRepository interface {
+	Create(ctx context.Context, document *entities.Document) (*entities.Document, error)
+	GetByID(ctx context.Context, id int64) (*entities.Document, error)
+	UpdateStatus(ctx context.Context, newStatus entities.DocumentStatus, id int64) error
+	GetStatusByID(ctx context.Context, id int64) (entities.DocumentStatus, error)
+}
+
 type WorkflowUseCase struct {
-	docRepo      interfaces.DocumentRepository
-	userRepo     interfaces.UserRepository
+	docRepo      DocumentRepository
+	userRepo     UserRepository
 	stateMachine *workflow.StateMachine
 }
 
 func NewWorkflowUseCase(
-	docRepo interfaces.DocumentRepository,
-	userRepo interfaces.UserRepository,
+	docRepo DocumentRepository,
+	userRepo UserRepository,
 ) *WorkflowUseCase {
 	return &WorkflowUseCase{
 		docRepo:      docRepo,

@@ -4,15 +4,28 @@ import (
 	"context"
 
 	"workflow_engine/internal/domain/entities"
-	"workflow_engine/internal/domain/interfaces"
 )
 
-type AuthUseCase struct {
-	userRepo       interfaces.UserRepository
-	passwordHasher interfaces.PasswordHasher
+type UserRepository interface {
+	Create(ctx context.Context, user *entities.User) (*entities.User, error)
+	GetByID(ctx context.Context, id int64) (*entities.User, error)
+	GetByRole(ctx context.Context, role string) ([]*entities.User, error)
+	GetByPhone(ctx context.Context, phone string) (*entities.User, error)
+	GetAll(ctx context.Context) ([]*entities.User, error)
+	Delete(ctx context.Context, id int64) error
 }
 
-func NewAuthUseCase(userRepo interfaces.UserRepository, passwordHasher interfaces.PasswordHasher) *AuthUseCase {
+type PasswordHasher interface {
+	Hash(password string) (string, error)
+	Compare(hashedPassword, password string) error
+}
+
+type AuthUseCase struct {
+	userRepo       UserRepository
+	passwordHasher PasswordHasher
+}
+
+func NewAuthUseCase(userRepo UserRepository, passwordHasher PasswordHasher) *AuthUseCase {
 	return &AuthUseCase{
 		userRepo:       userRepo,
 		passwordHasher: passwordHasher,

@@ -1,20 +1,26 @@
 package workflow
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 	"workflow_engine/internal/delivery/http/middleware"
 	"workflow_engine/internal/domain/entities"
-	"workflow_engine/internal/domain/interfaces"
 )
 
-type WorkflowHandler struct {
-	workflowUseCase interfaces.WorkflowUseCase
+type WorkflowUseCase interface {
+	Approve(ctx context.Context, docID int64, userID int64) error
+	Reject(ctx context.Context, docID int64, userID int64) error
+	GetDocumentStatus(ctx context.Context, docID int64) (entities.DocumentStatus, error)
 }
 
-func NewWorkflowHandler(workflowUseCase interfaces.WorkflowUseCase) *WorkflowHandler {
+type WorkflowHandler struct {
+	workflowUseCase WorkflowUseCase
+}
+
+func NewWorkflowHandler(workflowUseCase WorkflowUseCase) *WorkflowHandler {
 	return &WorkflowHandler{
 		workflowUseCase: workflowUseCase,
 	}
@@ -28,7 +34,7 @@ func (h *WorkflowHandler) Approve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, ok := r.Context().Value(middleware.UserIDKey).(int64)
+	userID, ok := middleware.GetUserIDFromContext(r.Context())
 	if !ok {
 		http.Error(w, "user not found in context", http.StatusUnauthorized)
 		return
@@ -60,7 +66,7 @@ func (h *WorkflowHandler) Reject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, ok := r.Context().Value(middleware.UserIDKey).(int64)
+	userID, ok := middleware.GetUserIDFromContext(r.Context())
 	if !ok {
 		http.Error(w, "user not found in context", http.StatusUnauthorized)
 		return

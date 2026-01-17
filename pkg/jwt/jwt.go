@@ -19,21 +19,18 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// JWTServiceInterface defines the contract for JWT operations
 type JWTServiceInterface interface {
 	GenerateToken(userID int64, role entities.UserRole) (string, error)
 	ValidateToken(tokenString string) (*Claims, error)
 }
 
 type JWTService struct {
-	secretKey     []byte
-	tokenDuration time.Duration
+	secretKey []byte
 }
 
-func NewJWTService(secretKey string, tokenDuration time.Duration) *JWTService {
+func NewJWTService(secretKey string) *JWTService {
 	return &JWTService{
-		secretKey:     []byte(secretKey),
-		tokenDuration: tokenDuration,
+		secretKey: []byte(secretKey),
 	}
 }
 
@@ -42,8 +39,7 @@ func (s *JWTService) GenerateToken(userID int64, role entities.UserRole) (string
 		UserID: userID,
 		Role:   string(role),
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.tokenDuration)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			IssuedAt: jwt.NewNumericDate(time.Now()),
 		},
 	}
 

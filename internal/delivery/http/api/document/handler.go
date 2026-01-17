@@ -1,21 +1,26 @@
 package document
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 	"workflow_engine/internal/domain/entities"
-	"workflow_engine/internal/domain/interfaces"
 	"workflow_engine/pkg/validator"
 )
 
+type DocumentUseCase interface {
+	Create(ctx context.Context, document *entities.Document) (*entities.Document, error)
+	GetByID(ctx context.Context, id int64) (*entities.Document, error)
+}
+
 type DocumentHandler struct {
-	documentUseCase interfaces.DocumentUseCase
+	documentUseCase DocumentUseCase
 	validator       *validator.Validator
 }
 
-func NewDocumentHandler(documentUseCase interfaces.DocumentUseCase) *DocumentHandler {
+func NewDocumentHandler(documentUseCase DocumentUseCase) *DocumentHandler {
 	return &DocumentHandler{
 		documentUseCase: documentUseCase,
 	}
