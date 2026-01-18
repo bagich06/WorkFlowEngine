@@ -23,6 +23,7 @@ type DocumentHandler struct {
 func NewDocumentHandler(documentUseCase DocumentUseCase) *DocumentHandler {
 	return &DocumentHandler{
 		documentUseCase: documentUseCase,
+		validator:       validator.New(),
 	}
 }
 
@@ -39,14 +40,8 @@ func (h *DocumentHandler) CreateDocument(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if req.Status != entities.DocumentStatusStarted {
-		http.Error(w, "Invalid initial status", http.StatusBadRequest)
-		return
-	}
-
 	document := &entities.Document{
-		Topic:  req.Topic,
-		Status: req.Status,
+		Topic: req.Topic,
 	}
 
 	documentID, err := h.documentUseCase.Create(r.Context(), document)

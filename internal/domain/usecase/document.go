@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"workflow_engine/internal/domain/entities"
+	"workflow_engine/internal/domain/entities/workflow"
 )
 
 type DocumentRepository interface {
@@ -14,14 +15,27 @@ type DocumentRepository interface {
 
 type DocumentUseCase struct {
 	docRepo DocumentRepository
+	wf      WorkflowRepository
 }
 
-func NewDocumentUseCase(docRepo DocumentRepository) *DocumentUseCase {
-	return &DocumentUseCase{docRepo: docRepo}
+func NewDocumentUseCase(docRepo DocumentRepository, wf WorkflowRepository) *DocumentUseCase {
+	return &DocumentUseCase{docRepo: docRepo, wf: wf}
 }
 
 func (uc *DocumentUseCase) Create(ctx context.Context, document *entities.Document) (*entities.Document, error) {
+	document.Status = entities.DocumentStatusStarted
 	created, err := uc.docRepo.Create(ctx, document)
+	if err != nil {
+		return nil, err
+	}
+
+	wf := &workflow.Workflow{
+		EntityID: created.ID,
+		Step:     0,
+		Status:   workflow.WorkflowStatusRunning,
+	}
+
+	err = uc.wf.Create(ctx, wf)
 	if err != nil {
 		return nil, err
 	}

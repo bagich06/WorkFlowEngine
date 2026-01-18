@@ -8,6 +8,8 @@ import (
 
 type WorkflowRepository interface {
 	GetByID(ctx context.Context, id int64) (*workflow.Workflow, error)
+	Create(ctx context.Context, wf *workflow.Workflow) error
+	GetByEntityID(ctx context.Context, entityID int64) (*workflow.Workflow, error)
 	Save(ctx context.Context, wf *workflow.Workflow) error
 }
 
@@ -24,7 +26,6 @@ func NewWorkFlowRepository(workflowRepo WorkflowRepository, documentRepo Documen
 }
 
 func (uc *WorkFlowUseCase) HandleSignal(ctx context.Context, workflowID int64, signal workflow.WorkflowSignal) error {
-
 	createdWorkflow, err := uc.workflowRepo.GetByID(ctx, workflowID)
 	if err != nil {
 		return err

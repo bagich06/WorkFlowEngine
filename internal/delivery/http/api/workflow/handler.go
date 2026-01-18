@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"workflow_engine/internal/delivery/http/middleware"
 
 	"workflow_engine/internal/domain/entities/workflow"
 )
@@ -35,12 +36,18 @@ func (h *WorkFlowHandler) Signal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userRole, ok := middleware.GetRoleFromContext(r.Context())
+	if !ok {
+		http.Error(w, "invalid user role", http.StatusBadRequest)
+		return
+	}
+
 	err = h.uc.HandleSignal(
 		r.Context(),
 		workflowID,
 		workflow.WorkflowSignal{
-			Action: workflow.WorkflowAction(req.Action),
-			Role:   string(req.Role),
+			Action: req.Action,
+			Role:   string(userRole),
 		},
 	)
 	if err != nil {
@@ -48,5 +55,11 @@ func (h *WorkFlowHandler) Signal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	wfResp := WorkflowResponse{
+		Status:      string(req.Action),
+		Description: string(userRole),
+	}
+
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(wfResp)
 }

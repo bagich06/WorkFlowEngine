@@ -1,8 +1,7 @@
 package workflow
 
-import "workflow_engine/internal/domain/entities"
+import "workflow_engine/internal/domain/entities/workflow"
 
 type SignalRequest struct {
-	Action string            `json:"action"`
-	Role   entities.UserRole `json:"role"`
+	Action workflow.WorkflowAction `json:"action"`
 }

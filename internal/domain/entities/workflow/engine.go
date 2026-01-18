@@ -22,7 +22,9 @@ func ApplySignal(workflow *Workflow, definition WorkflowDefinition, signal Workf
 		return nil
 	}
 
-	workflow.Step++
+	if signal.Action == WorkflowActionApprove {
+		workflow.Step++
+	}
 
 	if workflow.Step >= len(definition.Steps) {
 		workflow.Status = WorkflowStatusCompleted

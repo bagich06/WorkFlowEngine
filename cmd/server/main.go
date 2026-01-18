@@ -31,7 +31,7 @@ func main() {
 	docRepo := postgres.NewDocumentRepository(db)
 	workflowRepo := postgres.NewWorkFlowRepository(db)
 
-	docUseCase := usecase.NewDocumentUseCase(docRepo)
+	docUseCase := usecase.NewDocumentUseCase(docRepo, workflowRepo)
 	authUseCase := usecase.NewAuthUseCase(userRepo, passHasher)
 	workflowUseCase := usecase.NewWorkFlowRepository(workflowRepo, docRepo)
 
