@@ -30,9 +30,11 @@ func (uc *DocumentUseCase) Create(ctx context.Context, document *entities.Docume
 	}
 
 	wf := &workflow.Workflow{
-		EntityID: created.ID,
-		Step:     0,
-		Status:   workflow.WorkflowStatusRunning,
+		EntityID:     created.ID,
+		Group:        workflow.WorkflowGroupFirst,
+		RolesStatus:  nil,
+		GroupsStatus: nil,
+		Status:       workflow.WorkflowStatusRunning,
 	}
 
 	err = uc.wf.Create(ctx, wf)

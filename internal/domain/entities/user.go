@@ -7,6 +7,7 @@ const (
 	RoleManager   UserRole = "manager"
 	RoleEconomist UserRole = "economist"
 	RoleBoss      UserRole = "boss"
+	RoleInvestor  UserRole = "investor"
 )
 
 type User struct {

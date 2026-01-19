@@ -1,5 +1,7 @@
 package workflow
 
+import "workflow_engine/internal/domain/entities"
+
 type WorkflowAction string
 
 const (
@@ -9,5 +11,5 @@ const (
 
 type WorkflowSignal struct {
 	Action WorkflowAction
-	Role   string
+	Role   entities.UserRole
 }

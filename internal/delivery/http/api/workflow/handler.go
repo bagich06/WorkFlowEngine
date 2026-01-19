@@ -47,7 +47,7 @@ func (h *WorkFlowHandler) Signal(w http.ResponseWriter, r *http.Request) {
 		workflowID,
 		workflow.WorkflowSignal{
 			Action: req.Action,
-			Role:   string(userRole),
+			Role:   userRole,
 		},
 	)
 	if err != nil {

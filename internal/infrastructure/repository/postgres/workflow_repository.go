@@ -14,10 +14,10 @@ func NewWorkFlowRepository(db *DB) *WorkFlowRepository {
 }
 
 func (repo *WorkFlowRepository) GetByID(ctx context.Context, id int64) (*workflow.Workflow, error) {
-	query := `SELECT id, entity_id, step, status from workflows where id=$1;`
+	query := `SELECT id, entity_id, "group", roles_status, groups_status, status from workflows where id=$1;`
 
 	wf := &workflow.Workflow{}
-	err := repo.db.Pool.QueryRow(ctx, query, id).Scan(&wf.ID, &wf.EntityID, &wf.Step, &wf.Status)
+	err := repo.db.Pool.QueryRow(ctx, query, id).Scan(&wf.ID, &wf.EntityID, &wf.Group, &wf.RolesStatus, &wf.GroupsStatus, &wf.Status)
 	if err != nil {
 		return nil, err
 	}
@@ -26,10 +26,10 @@ func (repo *WorkFlowRepository) GetByID(ctx context.Context, id int64) (*workflo
 }
 
 func (repo *WorkFlowRepository) GetByEntityID(ctx context.Context, entityID int64) (*workflow.Workflow, error) {
-	query := `SELECT id, entity_id, step, status from workflows where entity_id=$1;`
+	query := `SELECT id, entity_id, "group", roles_status, groups_status, status from workflows where entity_id=$1;`
 
 	wf := &workflow.Workflow{}
-	err := repo.db.Pool.QueryRow(ctx, query, entityID).Scan(&wf.ID, &wf.EntityID, &wf.Step, &wf.Status)
+	err := repo.db.Pool.QueryRow(ctx, query, entityID).Scan(&wf.ID, &wf.EntityID, &wf.Group, &wf.RolesStatus, &wf.GroupsStatus, &wf.Status)
 	if err != nil {
 		return nil, err
 	}
@@ -38,9 +38,9 @@ func (repo *WorkFlowRepository) GetByEntityID(ctx context.Context, entityID int6
 }
 
 func (repo *WorkFlowRepository) Create(ctx context.Context, wf *workflow.Workflow) error {
-	query := `INSERT into workflows (entity_id, step, status) values ($1, $2, $3);`
+	query := `INSERT into workflows (entity_id, "group", roles_status, groups_status, status) values ($1, $2, $3, $4, $5);`
 
-	_, err := repo.db.Pool.Exec(ctx, query, wf.EntityID, wf.Step, wf.Status)
+	_, err := repo.db.Pool.Exec(ctx, query, wf.EntityID, wf.Group, wf.RolesStatus, wf.GroupsStatus, wf.Status)
 	if err != nil {
 		return err
 	}
@@ -49,9 +49,9 @@ func (repo *WorkFlowRepository) Create(ctx context.Context, wf *workflow.Workflo
 }
 
 func (repo *WorkFlowRepository) Save(ctx context.Context, wf *workflow.Workflow) error {
-	query := `UPDATE workflows SET step=$1, status=$2 WHERE id=$3;`
+	query := `UPDATE workflows SET "group"=$1, roles_status=$2, groups_status=$3, status=$4 WHERE id=$5;`
 
-	_, err := repo.db.Pool.Exec(ctx, query, wf.Step, wf.Status, wf.ID)
+	_, err := repo.db.Pool.Exec(ctx, query, wf.Group, wf.RolesStatus, wf.GroupsStatus, wf.Status, wf.ID)
 	if err != nil {
 		return err
 	}

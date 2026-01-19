@@ -9,6 +9,8 @@ var (
 
 	ErrNotWorker             = errors.New("only workers are allowed to do this")
 	ErrWorkflowAlreadyExists = errors.New("workflow already exists")
+	ErrRoleNotAllowed        = errors.New("role not allowed")
+	ErrInvalidAction         = errors.New("invalid action")
 	//ErrNotManager   = errors.New("only managers are allowed to do this")
 	//ErrNotEconomist = errors.New("only economists is allowed to do this")
 	//ErrNotBoss      = errors.New("only boss is allowed to do this")
