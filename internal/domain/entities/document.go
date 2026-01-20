@@ -18,5 +18,6 @@ const (
 type Document struct {
 	ID     int64
 	Topic  string
+	Amount float64
 	Status DocumentStatus
 }

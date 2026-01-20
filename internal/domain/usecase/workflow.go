@@ -31,10 +31,18 @@ func (uc *WorkFlowUseCase) HandleSignal(ctx context.Context, workflowID int64, s
 		return err
 	}
 
+	amount, err := uc.documentRepo.GetAmountByID(ctx, createdWorkflow.EntityID)
+	if err != nil {
+		return err
+	}
+
 	err = workflow.ApplySignal(
 		createdWorkflow,
 		workflow.DocumentApprovalWorkflow,
 		signal,
+		workflow.WorkflowContext{
+			Amount: amount,
+		},
 	)
 	if err != nil {
 		return err

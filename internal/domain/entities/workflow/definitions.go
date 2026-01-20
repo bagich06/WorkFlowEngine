@@ -7,6 +7,10 @@ type WorkflowDefinition struct {
 	Steps []WorkflowStep
 }
 
+type WorkflowContext struct {
+	Amount float64
+}
+
 type WorkflowStep struct {
 	Name          string
 	AllowedRole   entities.UserRole
@@ -34,6 +38,11 @@ var DocumentApprovalWorkflow = WorkflowDefinition{
 		{
 			Name:          "investors_approval",
 			AllowedRole:   entities.RoleInvestor,
+			ParallelGroup: WorkflowGroupFinal,
+		},
+		{
+			Name:          "final_approval",
+			AllowedRole:   entities.RoleMainInvestor,
 			ParallelGroup: WorkflowGroupFinal,
 		},
 	},

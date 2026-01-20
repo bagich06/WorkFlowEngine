@@ -1,13 +1,16 @@
 package workflow
 
 import (
-	"errors"
 	"workflow_engine/internal/domain/entities"
 )
 
-func ApplySignal(workflow *Workflow, definition WorkflowDefinition, signal WorkflowSignal) error {
+func ApplySignal(workflow *Workflow, definition WorkflowDefinition, signal WorkflowSignal, ctx WorkflowContext) error {
 	if workflow.Status != WorkflowStatusRunning {
-		return errors.New("workflow already finished")
+		return entities.ErrWorkflowAlreadyFinished
+	}
+
+	if workflow.RolesStatus[signal.Role] {
+		return entities.ErrRoleAlreadyFinished
 	}
 
 	currentGroup := workflow.Group
@@ -74,6 +77,11 @@ func ApplySignal(workflow *Workflow, definition WorkflowDefinition, signal Workf
 	}
 
 	if allDone {
+		if ctx.Amount <= 1000000 {
+			workflow.Status = WorkflowStatusCompleted
+			return nil
+		}
+
 		if nextGroup != "" {
 			workflow.Group = nextGroup
 			workflow.RolesStatus = make(map[entities.UserRole]bool)

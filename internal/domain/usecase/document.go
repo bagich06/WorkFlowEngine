@@ -10,7 +10,7 @@ type DocumentRepository interface {
 	Create(ctx context.Context, document *entities.Document) (*entities.Document, error)
 	GetByID(ctx context.Context, id int64) (*entities.Document, error)
 	UpdateStatus(ctx context.Context, newStatus entities.DocumentStatus, id int64) error
-	GetStatusByID(ctx context.Context, id int64) (entities.DocumentStatus, error)
+	GetAmountByID(ctx context.Context, id int64) (float64, error)
 }
 
 type DocumentUseCase struct {

@@ -3,11 +3,12 @@ package entities
 type UserRole string
 
 const (
-	RoleWorker    UserRole = "worker"
-	RoleManager   UserRole = "manager"
-	RoleEconomist UserRole = "economist"
-	RoleBoss      UserRole = "boss"
-	RoleInvestor  UserRole = "investor"
+	RoleWorker       UserRole = "worker"
+	RoleManager      UserRole = "manager"
+	RoleEconomist    UserRole = "economist"
+	RoleBoss         UserRole = "boss"
+	RoleInvestor     UserRole = "investor"
+	RoleMainInvestor UserRole = "main_investor"
 )
 
 type User struct {

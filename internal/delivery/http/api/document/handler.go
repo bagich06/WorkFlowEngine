@@ -41,7 +41,8 @@ func (h *DocumentHandler) CreateDocument(w http.ResponseWriter, r *http.Request)
 	}
 
 	document := &entities.Document{
-		Topic: req.Topic,
+		Topic:  req.Topic,
+		Amount: req.Amount,
 	}
 
 	documentID, err := h.documentUseCase.Create(r.Context(), document)
