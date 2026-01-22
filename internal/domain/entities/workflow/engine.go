@@ -9,7 +9,7 @@ func ApplySignal(workflow *Workflow, definition WorkflowDefinition, signal Workf
 		return entities.ErrWorkflowAlreadyFinished
 	}
 
-	if workflow.RolesStatus[signal.Role] {
+	if workflow.RolesStatus != nil && workflow.RolesStatus[signal.Role] {
 		return entities.ErrRoleAlreadyFinished
 	}
 

@@ -13,6 +13,7 @@ var (
 	ErrInvalidAction           = errors.New("invalid action")
 	ErrWorkflowAlreadyFinished = errors.New("workflow already finished")
 	ErrRoleAlreadyFinished     = errors.New("role already finished")
+	ErrInvalidRole             = errors.New("invalid user role")
 	//ErrNotManager   = errors.New("only managers are allowed to do this")
 	//ErrNotEconomist = errors.New("only economists is allowed to do this")
 	//ErrNotBoss      = errors.New("only boss is allowed to do this")

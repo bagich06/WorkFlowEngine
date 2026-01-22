@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package grpc;
+
+option go_package = "github.com/bagich06/workflow_engine/internal/delivery/grpc/pb;pb";
+
+service Workflow {
+  rpc Signal(SignalRequest) returns (SignalResponse) {}
+}
+
+message SignalRequest {
+  int64 WorkflowID = 1;
+  string Role = 2;
+  string Action = 3;
+}
+
+message SignalResponse {
+  string Status = 1;
+  string Description = 2;
+}
+
